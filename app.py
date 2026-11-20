@@ -11,6 +11,15 @@ Ejecutar desde la raiz del proyecto:
     python app.py              equivalente a `flet run` de escritorio
 """
 
+import os
+
+# Evitar el aviso/fallo de matplotlib cuando no se puede escribir en
+# %LOCALAPPDATA%\matplotlib (p. ej. bajo un sandbox): usar una caché local.
+os.environ.setdefault(
+    "MPLCONFIGDIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cache", "mpl"),
+)
+
 import flet as ft
 
 from frontend.app import main

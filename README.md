@@ -23,11 +23,19 @@ Implementación en Python del proyecto del PDF `Proyecto Sucesiones y Series.pdf
 
 ```powershell
 cd "C:\Users\slara\Documents\calculo III\proyecto"
-.\.venv\Scripts\activate
 
-flet run app.py            # ventana nativa (descarga el cliente la 1.ª vez)
-flet run --web app.py      # alternativa: en el navegador
+# Opción recomendada: ventana nativa (redirige las cachés de flet y matplotlib
+# dentro del proyecto, así no falla si el equipo bloquea escribir en C:\Users\...\.flet)
+.\run_app.cmd
+
+# Alternativas:
+flet run app.py            # ventana nativa directa (necesita poder escribir en ~\.flet)
+flet run --web app.py      # en el navegador (no necesita descargar el cliente)
 ```
+
+> **Nota.** `flet run app.py` descarga el cliente de escritorio a `C:\Users\<tú>\.flet`.
+> Si ahí aparece `Acceso denegado` (p. ej. trabajando dentro de un sandbox), usa
+> `.\run_app.cmd`, que guarda esa caché en `.cache\` dentro del proyecto.
 
 ## Sin interfaz
 

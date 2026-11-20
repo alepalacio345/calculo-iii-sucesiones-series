@@ -276,6 +276,10 @@ class App:
         return su.tabla(self.N, impreso), su.analisis_B(impreso)
 
     def refrescar(self) -> None:
+        import matplotlib.pyplot as plt
+        # Cerrar las figuras de la seccion anterior (evita acumular figuras en
+        # el registro global de pyplot al mover el deslizador o cambiar de pestaña).
+        plt.close("all")
         d, info = self._datos()
         constructor = {
             "resumen": self._sec_resumen,

@@ -4,6 +4,9 @@
 # Estado local de Flet (storage, cache)
 .flet/
 
+# Caches redirigidas por run_app.cmd (cliente de escritorio + matplotlib)
+.cache/
+
 # Ruedas descargadas (dependencias)
 .wheels/
 

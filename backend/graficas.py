@@ -14,6 +14,7 @@ from __future__ import annotations
 import math
 
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
 
@@ -54,7 +55,7 @@ def fig_sucesiones(d: dict, modelo: str = "impreso") -> Figure:
     p = np.array(d["p"])
     q = np.array(d["q"])
 
-    fig = Figure(figsize=(9.2, 5.6), dpi=110)
+    fig = plt.figure(figsize=(9.2, 5.6), dpi=110)
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2)
 
@@ -91,7 +92,7 @@ def fig_sucesiones_detalle(d: dict, modelo: str = "impreso") -> Figure:
     r = np.array(d["r"])
     p = np.array(d["p"])
     q = np.array(d["q"])
-    fig = Figure(figsize=(9.2, 6.4), dpi=110)
+    fig = plt.figure(figsize=(9.2, 6.4), dpi=110)
     casos = [
         (r, C_R, "--", r"(i) $r_n=\frac{1}{3}r_{n-1}$   —  sin raíz parásita",
          r"$r_n$"),
@@ -137,7 +138,7 @@ def fig_diferencias(d: dict, relativa: bool = False) -> Figure:
         relativa: ``True`` para usar el error relativo en el panel (a).
     """
     n = np.array(d["n"])
-    fig = Figure(figsize=(9.2, 4.4), dpi=110)
+    fig = plt.figure(figsize=(9.2, 4.4), dpi=110)
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2)
 
@@ -200,7 +201,7 @@ def fig_serie(d: dict) -> Figure:
     SD = np.array(d["SD"])
     D = np.array(d["D"])
 
-    fig = Figure(figsize=(9.2, 4.4), dpi=110)
+    fig = plt.figure(figsize=(9.2, 4.4), dpi=110)
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2)
 
@@ -243,7 +244,7 @@ def fig_triangulos(niveles: int = 3) -> Figure:
     v2 = np.array([1.0, 0.0])
     v3 = np.array([0.5, sq3])
 
-    fig = Figure(figsize=(9.2, 4.3), dpi=110)
+    fig = plt.figure(figsize=(9.2, 4.3), dpi=110)
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2)
 
@@ -305,7 +306,7 @@ def fig_autovalores(info: dict, titulo: str = "") -> Figure:
     auto = info["autovalores"]
     rho = info["radio_espectral"]
 
-    fig = Figure(figsize=(4.6, 4.2), dpi=110)
+    fig = plt.figure(figsize=(4.6, 4.2), dpi=110)
     ax = fig.add_subplot(1, 1, 1)
 
     theta = np.linspace(0, 2 * np.pi, 400)
@@ -364,4 +365,5 @@ def guardar_todas(d: dict, info_B: dict, carpeta: str, sufijo: str = "") -> list
         ruta = os.path.join(carpeta, nombre)
         fig.savefig(ruta, dpi=140, bbox_inches="tight", facecolor="white")
         rutas.append(ruta)
+        plt.close(fig)  # liberar la figura de pyplot (evita acumular estado)
     return rutas
