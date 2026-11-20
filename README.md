@@ -11,7 +11,7 @@ Implementación en Python del proyecto del PDF `Proyecto Sucesiones y Series.pdf
 
 | Ruta | Contenido |
 |---|---|
-| `main.py` | **punto de entrada** (arranca la interfaz) |
+| `app.py` | **punto de entrada** (arranca la interfaz) |
 | `backend/sucesiones.py` | **back-end**: toda la matemática (sucesiones, raíces, series, matriz `B`) |
 | `backend/graficas.py` | **back-end**: las 7 figuras, sólo matplotlib (sin UI) |
 | `frontend/app.py` | **front-end**: interfaz Flet (menú, tablas, figuras, informe) |
@@ -25,8 +25,8 @@ Implementación en Python del proyecto del PDF `Proyecto Sucesiones y Series.pdf
 cd "C:\Users\slara\Documents\calculo III\proyecto"
 .\.venv\Scripts\activate
 
-flet run main.py            # ventana nativa (descarga el cliente la 1.ª vez)
-flet run --web main.py      # alternativa: en el navegador
+flet run app.py            # ventana nativa (descarga el cliente la 1.ª vez)
+flet run --web app.py      # alternativa: en el navegador
 ```
 
 ## Sin interfaz
@@ -53,3 +53,26 @@ completa si se quiere un sitio de documentación.)
 ## Stack
 
 Python 3.12 · Flet 1.1.2 · flet-charts 1.1.2 · matplotlib 3.11 · numpy 2.5
+
+## Subir a GitHub
+
+El historial ya está creado localmente (5+ commits) y el remoto `origin`
+apunta a `https://github.com/alepalacio345/calculo-iii-sucesiones-series.git`.
+Falta una sola cosa, que requiere tu login de GitHub (una vez):
+
+```powershell
+# 1) Crear el repo VACÍO en github.com: New repository →
+#    nombre "calculo-iii-sucesiones-series" → Create (sin README ni .gitignore).
+
+# 2) Empujar (se abrirá el navegador para iniciar sesión en GitHub una vez):
+cd "C:\Users\slara\Documents\calculo III\proyecto"
+git push -u origin main
+```
+
+Alternativa con la CLI de GitHub (instala `gh`, inicia sesión y sube en un paso):
+
+```powershell
+gh auth login
+gh repo create alepalacio345/calculo-iii-sucesiones-series --private --source . --push
+```
+

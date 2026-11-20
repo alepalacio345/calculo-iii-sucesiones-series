@@ -377,7 +377,7 @@ Python 3.12 + Flet 1.1.2 + flet-charts + matplotlib + numpy
 proyecto/
 ├── Proyecto Sucesiones y Series.pdf
 ├── INVESTIGACION.md          ← este documento
-├── main.py                   ← punto de entrada (arranca la interfaz)
+├── app.py                   ← punto de entrada (arranca la interfaz)
 ├── backend/
 │   ├── sucesiones.py         ← toda la matemática, sin UI
 │   └── graficas.py           ← las 7 figuras, sólo matplotlib
@@ -404,7 +404,7 @@ proyecto/
 - ⚠️ **No verificado:** la ventana real. En este entorno el cliente Flutter no
   puede descargarse (directorio de caché bloqueado), así que el proceso arranca
   pero no llega a pintar. **Hay que probarlo en tu sesión normal** con
-  `flet run main.py`.
+  `flet run app.py`.
 
 ### 8.1 Las figuras
 
@@ -436,8 +436,8 @@ cd "C:\Users\slara\Documents\calculo III\proyecto"
 # el entorno ya está creado con flet 1.1.2
 .\.venv\Scripts\activate
 
-flet run main.py            # ventana nativa (la 1ª vez descarga el cliente)
-flet run --web main.py      # en el navegador, sin cliente de escritorio
+flet run app.py            # ventana nativa (la 1ª vez descarga el cliente)
+flet run --web app.py      # en el navegador, sin cliente de escritorio
 
 # o sin interfaz, sólo las figuras y los números:
 python scripts\generar_figuras.py
@@ -471,7 +471,7 @@ Si `flet run` falla al descargar el cliente, `pip install flet-desktop` y reinte
 
 | Día | Trabajo |
 |---|---|
-| **20/11 (hoy)** | Decidir §10.1. Probar `flet run main.py` en tu sesión. Ajustar la interfaz si algo no pinta. |
+| **20/11 (hoy)** | Decidir §10.1. Probar `flet run app.py` en tu sesión. Ajustar la interfaz si algo no pinta. |
 | **21/11** | Redactar el informe con las derivaciones de §2 (ya están hechas): término general, formas cerradas, `n₀`, series, matriz. Insertar las PNG de `salidas/`. |
 | **22/11** | Revisión cruzada: comprobar que cada punto del PDF tiene su tabla/gráfica. Preparar la defensa (saber explicar por qué `ρ > 1` implica divergencia). |
 | **23/11** | Entrega. |

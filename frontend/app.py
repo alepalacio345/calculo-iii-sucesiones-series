@@ -8,12 +8,12 @@ La logica matematica y las figuras estan separadas en `backend/`:
 
     backend/sucesiones.py   calculos: sucesiones, raices, series, matriz B
     backend/graficas.py     figuras de matplotlib (sin dependencias de UI)
-    main.py                 punto de entrada (arranca la interfaz)
+    app.py                  punto de entrada (arranca la interfaz)
 
 Ejecutar desde la raiz del proyecto:
 
-    flet run main.py            (ventana nativa)
-    flet run --web main.py      (navegador)
+    flet run app.py            (ventana nativa)
+    flet run --web app.py      (navegador)
 """
 
 from __future__ import annotations

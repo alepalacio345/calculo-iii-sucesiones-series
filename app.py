@@ -6,9 +6,9 @@ minimo: toda la logica de UI vive en `frontend/` y la matematica en `backend/`.
 
 Ejecutar desde la raiz del proyecto:
 
-    flet run main.py            ventana nativa (el cliente se descarga la 1.ª vez)
-    flet run --web main.py      en el navegador
-    python main.py              equivalente a `flet run` de escritorio
+    flet run app.py            ventana nativa (el cliente se descarga la 1.ª vez)
+    flet run --web app.py      en el navegador
+    python app.py              equivalente a `flet run` de escritorio
 """
 
 import flet as ft
