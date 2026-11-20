@@ -1,31 +1,40 @@
 """
-Descarga e instala las dependencias de Flet SIN usar el resolver de pip.
+Descarga e instala las dependencias de Flet SIN depender del resolver de pip.
 
-Motivo: con pip 23.2.1 (el que trae el venv), `pip install flet-cli` se queda
-"colgado" resolviendo el grafo de dependencias (CPU al 100 %, sin avanzar).
-Este script evita ese paso: descarga cada rueda con `--no-deps` (rapido) y luego
-instala todo desde el directorio local con `--no-index`.
+Motivo
+    Con pip 23.2.1 (el que trae el venv) `pip install flet-cli` se queda
+    colgado resolviendo dependencias y, ademas, `pip download` se ralentiza o
+    bloquea con los indices grandes de PyPI. Python (urllib) si responde rapido
+    (una peticion al JSON de PyPI tarda <1 s), asi que este script:
 
-Uso:
+        1. descarga cada rueda directamente desde PyPI con urllib,
+        2. recorre el grafo de dependencias leyendo ``requires_dist`` del JSON,
+        3. instala todo desde las ruedas locales con ``pip --no-index --no-deps``.
+
+Uso
     .\\.venv\\Scripts\\python.exe scripts\\instalar_deps.py
 
-No es necesario en un entorno con pip >= 24 (ahi basta `pip install flet[all]`).
+En un entorno con pip >= 24 no hace falta: basta ``pip install 'flet[all]'``.
 """
 
 from __future__ import annotations
 
-import email
 import glob
+import json
 import os
 import subprocess
 import sys
-import zipfile
+import urllib.request
 
 from packaging.markers import Marker
 from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 
-WHEELS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".wheels")
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WHEELS = os.path.join(RAIZ, ".wheels")
 os.makedirs(WHEELS, exist_ok=True)
+
+PY = sys.executable
 
 # Entorno que evalua `packaging` para decidir que markers aplican.
 ENV = {
@@ -40,11 +49,13 @@ ENV = {
     "extra": "",
 }
 
-# Paquetes que YA estan instalados en el venv (se saltan).
+# Paquetes que YA estan instalados en el venv (no se descargan).
 INSTALADOS = {"flet", "flet-charts", "flet-desktop", "msgpack",
-              "numpy", "matplotlib", "packaging", "pillow"}
+              "numpy", "matplotlib", "packaging", "pillow",
+              "pyparsing", "python-dateutil", "contourpy", "kiwisolver",
+              "cycler", "fonttools", "tzdata"}
 
-# Semillas: dependencias directas (leidas de la metadata de flet-cli / flet-web / flet).
+# Semillas: dependencias directas de flet-cli / flet-web / flet (1.1.2).
 SEMILLAS = [
     "flet-cli==1.1.2",
     "flet-web==1.1.2",
@@ -61,7 +72,7 @@ SEMILLAS = [
     "oauthlib",
     "repath",
     "httpx",
-    # extras de uvicorn[standard] (uvloop se salta: solo Linux/macOS)
+    # extras de uvicorn[standard] (uvloop es solo Linux/macOS)
     "watchfiles",
     "httptools",
     "colorama",
@@ -69,85 +80,133 @@ SEMILLAS = [
     "pyyaml",
 ]
 
+HEADERS = {"User-Agent": "sucesiones-series/1.0 (+proyecto escolar)"}
+
 
 def _nombre(espec: str) -> str:
+    """Nombre normalizado (minusculas, guiones) de una especificacion."""
     return Requirement(espec).name.lower().replace("_", "-")
 
 
-def _wheel_existente(nombre: str) -> str | None:
-    hits = glob.glob(os.path.join(WHEELS, f"{nombre.replace('-', '_')}-*.whl"))
-    if not hits:
-        hits = glob.glob(os.path.join(WHEELS, f"{nombre.replace('_', '-')}-*.whl"))
-    return hits[0] if hits else None
+def _ya_existe(nombre: str) -> str | None:
+    for pat in (nombre, nombre.replace("-", "_")):
+        hits = glob.glob(os.path.join(WHEELS, f"{pat}-*.whl"))
+        if hits:
+            return hits[0]
+    return None
 
 
-def _descargar(espec: str) -> str:
-    """Descarga la rueda (sin dependencias) y devuelve su ruta."""
+def _json(nombre: str) -> dict:
+    url = f"https://pypi.org/pypi/{nombre}/json"
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        return json.load(resp)
+
+
+def _elegir_rueda(data: dict, pin: str | None) -> dict | None:
+    """Elige la mejor rueda para CPython 3.12 / Windows x64."""
+    ver = pin or data["info"]["version"]
+    files = data.get("releases", {}).get(ver) or []
+    ruedas = [f for f in files if f["packagetype"] == "bdist_wheel"]
+    if not ruedas:
+        return None
+
+    def puntuar(f: dict) -> int:
+        fn = f["filename"]
+        s = 0
+        if "cp312" in fn:
+            s += 100
+        if "win_amd64" in fn:
+            s += 20
+        if "none-any" in fn:
+            s += 8
+        if "abi3" in fn:
+            s += 4
+        # respetar requires_python
+        if f.get("requires_python"):
+            try:
+                if not SpecifierSet(f["requires_python"]).contains("3.12.0"):
+                    s -= 1000
+            except Exception:  # noqa: BLE001
+                pass
+        return s
+
+    ruedas.sort(key=puntuar, reverse=True)
+    return ruedas[0] if puntuar(ruedas[0]) > -500 else None
+
+
+def _procesar(espec: str) -> dict:
+    """Descarga la rueda (si falta) y devuelve el JSON de PyPI."""
     nombre = _nombre(espec)
-    ya = _wheel_existente(nombre)
-    if ya:
-        return ya
-    subprocess.run(
-        [sys.executable, "-m", "pip", "download", "--no-deps", "-d", WHEELS, espec],
-        check=True,
-        env={**os.environ, "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PIP_PROGRESS_BAR": "off"},
-    )
-    ruta = _wheel_existente(nombre)
-    if not ruta:
-        raise RuntimeError(f"No se encontro la rueda de {espec}")
-    return ruta
+    ya = _ya_existe(nombre)
+    data = _json(nombre)
+    if ya is None:
+        pin = None
+        spec = str(Requirement(espec).specifier)
+        if spec.startswith("=="):
+            pin = spec[2:].split(",")[0]
+        rueda = _elegir_rueda(data, pin)
+        if rueda is None:
+            raise RuntimeError(f"sin rueda para {espec}")
+        destino = os.path.join(WHEELS, rueda["filename"])
+        req = urllib.request.Request(rueda["url"], headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=300) as resp, open(destino, "wb") as fh:
+            fh.write(resp.read())
+        print(f"  descargado: {rueda['filename']} ({os.path.getsize(destino)//1024} KB)")
+    else:
+        print(f"  ya estaba: {os.path.basename(ya)}")
+    return data
 
 
-def _requires(ruta: str) -> list[str]:
-    with zipfile.ZipFile(ruta) as z:
-        meta = next(n for n in z.namelist() if n.endswith(".dist-info/METADATA"))
-        msg = email.message_from_bytes(z.read(meta))
-        return msg.get_all("Requires-Dist") or []
+def _descubrir(data: dict, cola: list, vistos: set) -> None:
+    """Anade a la cola las dependencias no vistas de ``requires_dist``."""
+    for linea in data["info"].get("requires_dist") or []:
+        try:
+            req = Requirement(linea)
+        except Exception:  # noqa: BLE001
+            continue
+        if req.marker and not Marker(str(req.marker)).evaluate(ENV):
+            continue
+        clave = req.name.lower().replace("_", "-")
+        if clave not in vistos and clave not in INSTALADOS:
+            cola.append(clave)
 
 
 def main() -> int:
-    cola = list(SEMILLAS)
+    cola: list[str] = list(SEMILLAS)
     vistos: set[str] = set()
-    ruedas: list[str] = []
+    errores: list[str] = []
 
     while cola:
         espec = cola.pop(0)
-        nombre = _nombre(espec)
-        if nombre in vistos or nombre in INSTALADOS:
+        clave = _nombre(espec)
+        if clave in vistos or clave in INSTALADOS:
             continue
-        vistos.add(nombre)
-
+        vistos.add(clave)
         try:
-            ruta = _descargar(espec)
+            data = _procesar(espec)
         except Exception as exc:  # noqa: BLE001
-            print(f"  [error descarga] {espec}: {exc}")
+            errores.append(f"{espec}: {exc}")
+            print(f"  [error] {espec}: {exc}")
             continue
+        _descubrir(data, cola, vistos)
 
-        ruedas.append(ruta)
-        print(f"  ok: {os.path.basename(ruta)}")
+    if errores:
+        print("\nErrores:", *errores, sep="\n  - ")
 
-        for linea in _requires(ruta):
-            try:
-                req = Requirement(linea)
-            except Exception:  # noqa: BLE001
-                continue
-            # evaluar marker de entorno (descarta extras no pedidos y SO/version)
-            if req.marker and not Marker(str(req.marker)).evaluate(ENV):
-                continue
-            sub = req.name
-            if sub.lower().replace("_", "-") not in vistos:
-                cola.append(sub)
+    if errores:
+        print("\nErrores:", *errores, sep="\n  - ")
 
-    # instalar todo desde las ruedas locales (sin red ni resolver)
-    if ruedas:
-        print(f"\nInstalando {len(ruedas)} ruedas...")
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--no-index", "--no-deps",
-             *[os.path.abspath(r) for r in ruedas]],
-            check=True,
-        )
-    print("Listo.")
-    return 0
+    # Instalar todas las ruedas desde disco (sin red ni resolver)
+    ruedas = sorted(glob.glob(os.path.join(WHEELS, "*.whl")))
+    print(f"\nInstalando {len(ruedas)} ruedas...")
+    subprocess.run(
+        [PY, "-m", "pip", "install", "--no-index", "--no-deps",
+         *[os.path.abspath(r) for r in ruedas]],
+        check=True,
+    )
+    print("Instalacion completa.")
+    return 1 if errores else 0
 
 
 if __name__ == "__main__":

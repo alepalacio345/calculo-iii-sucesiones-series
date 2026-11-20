@@ -1,6 +1,9 @@
 # Entorno virtual de Python
 .venv/
 
+# Estado local de Flet (storage, cache)
+.flet/
+
 # Ruedas descargadas (dependencias)
 .wheels/
 
