@@ -53,13 +53,22 @@ for seccion in [s[0] for s in appmod.App.SECCIONES]:
         }[seccion]
         prueba("seccion %s (%s)" % (seccion, modelo), lambda m=metodo: m(d, info))
 
-# valores extremos de n
+# valores extremos de n: TODAS las secciones (el resumen indexa T_n y
+# rompia con N < 30 si no se acota).
+metodos = {
+    "resumen": a._sec_resumen,
+    "sucesiones": a._sec_sucesiones,
+    "diferencias": a._sec_diferencias,
+    "serie": a._sec_serie,
+    "matriz": a._sec_matriz,
+    "informe": a._sec_informe,
+}
 for n in (5, 60):
     a.N = n
     a.modelo = "impreso"
     d, info = a._datos()
-    prueba("n=%d sucesiones" % n, lambda: a._sec_sucesiones(d, info))
-    prueba("n=%d diferencias" % n, lambda: a._sec_diferencias(d, info))
+    for seccion, metodo in metodos.items():
+        prueba("n=%d %s" % (n, seccion), lambda m=metodo: m(d, info))
 
 # el texto del informe se genera y no esta vacio
 d, info = a._datos()

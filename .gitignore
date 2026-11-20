@@ -10,6 +10,9 @@
 # Ruedas descargadas (dependencias)
 .wheels/
 
+# Descargas temporales del cliente de Flet (no deben versionarse)
+flet-windows.zip.*
+
 # Caché de Python
 __pycache__/
 *.py[cod]

@@ -105,11 +105,20 @@ def tabla(columnas: list[str], filas: list[list[str]], alto: int = 300,
     )
 
 
-def chart(fig, alto: int | None = None) -> ft.Control:
-    """Envuelve una Figure de matplotlib en un control de Flet."""
+def chart(fig, alto: int = 400) -> ft.Control:
+    """Renderiza una Figure de matplotlib a PNG y la muestra como imagen.
+
+    Se usa una imagen estatica (``ft.Image``) en lugar del canvas interactivo
+    (``MatplotlibChart``): el canvas interactivo no renderizaba de forma fiable
+    en todos los entornos (dejaba la ventana en gris). ``ft.Image`` es un control
+    base de Flet y se dibuja siempre. La altura es fija porque la grafica vive
+    dentro de una columna con scroll.
+    """
+    import io
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=110, bbox_inches="tight", facecolor="white")
     return ft.Container(
-        content=fch.MatplotlibChart(figure=fig, expand=True),
-        expand=True,
+        content=ft.Image(src=buf.getvalue(), fit=ft.BoxFit.CONTAIN),
         height=alto,
     )
 
@@ -199,34 +208,33 @@ class App:
         )
         self.slider_n = ft.Slider(
             min=5, max=60, divisions=55, value=self.N, width=220,
-            label="{value}", on_change=self._cambiar_n,
+            label="{value}", on_change_end=self._cambiar_n,
         )
         return tarjeta(
-            ft.Row(
-                wrap=True,
-                spacing=20,
-                run_spacing=10,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ft.Column(
+                spacing=10,
                 controls=[
-                    ft.Column(
-                        spacing=1,
-                        controls=[
-                            ft.Text("Áreas de los triángulos", size=17,
-                                    weight=ft.FontWeight.BOLD),
-                            ft.Text("Proyecto de Cálculo III — sucesiones y series",
-                                    size=11, opacity=0.7),
-                        ],
-                    ),
-                    ft.Container(expand=True),
+                    ft.Text("Áreas de los triángulos", size=17,
+                            weight=ft.FontWeight.BOLD),
+                    ft.Text("Proyecto de Cálculo III — sucesiones y series",
+                            size=11, opacity=0.7),
                     ft.Row(
-                        spacing=6,
+                        wrap=True,
+                        spacing=16,
+                        run_spacing=8,
                         vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
-                            ft.Text("n máx.", size=12),
-                            self.slider_n,
+                            ft.Row(
+                                spacing=6,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Text("n máx.", size=12),
+                                    self.slider_n,
+                                ],
+                            ),
+                            self.dd_modelo,
                         ],
                     ),
-                    self.dd_modelo,
                 ],
             ),
             padding=14,
@@ -247,7 +255,7 @@ class App:
                             vertical_alignment=ft.CrossAxisAlignment.START,
                             controls=[
                                 tarjeta(self.menu, padding=10, width=216),
-                                ft.Column(expand=True, controls=[self.contenido]),
+                                self.contenido,
                             ],
                         ),
                     ],
@@ -294,7 +302,9 @@ class App:
 
     # -- secciones ----------------------------------------------------------
     def _sec_resumen(self, d, info) -> list[ft.Control]:
-        n0 = 30
+        # n0 se calcula con el N actual para no indexar fuera de rango cuando el
+        # deslizador esta por debajo de 30 (antes estaba fijo en 30 y reventaba).
+        n0 = min(30, self.N)
         return [
             titulo("El problema", sub="Triángulo equilátero de área T₀ = 1, "
                                       "subdividido indefinidamente"),
@@ -624,7 +634,11 @@ def main(page: ft.Page) -> None:
         page.window.height = 900
     except Exception:
         pass
-    App(page)
+    try:
+        App(page)
+    except Exception:
+        import traceback
+        traceback.print_exc()
 
 
 if __name__ == "__main__":
