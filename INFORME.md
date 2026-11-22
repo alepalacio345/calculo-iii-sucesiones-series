@@ -2,9 +2,9 @@
 
 **Curso:** Cálculo III · **Fecha de entrega:** 23/11/2026 · **Modalidad:** grupos de dos
 
-Implementación en **Python** (Flet + matplotlib + numpy) del proyecto de subdivisión
-geométrica de un triángulo equilátero y del análisis numérico de tres algoritmos
-recursivos equivalentes.
+Implementación en **Python** (FastAPI + HTML/CSS + matplotlib + numpy) del proyecto de
+subdivisión geométrica de un triángulo equilátero y del análisis numérico de tres
+algoritmos recursivos equivalentes. La interfaz es **web** (HTML + CSS, sin JavaScript).
 
 ---
 
@@ -282,10 +282,9 @@ B = [[28/3, −27, 18], [1, 0, 0], [0, 1, 0]]
 ```powershell
 cd "C:\Users\slara\Documents\calculo III\proyecto"
 
-.\run_app.cmd              # ventana nativa (escritorio, Flet)
-.\run_web.cmd              # versión web (HTML/CSS + Python), abrir http://127.0.0.1:8000
+.\run_web.cmd              # arranca el servidor web; abrir http://127.0.0.1:8000
 python scripts\generar_figuras.py    # figuras -> salidas/*.png
 ```
 
-El programa tiene **dos interfaces** que comparten el mismo back-end matemático:
-una de escritorio (Flet) y una web (HTML/CSS con FastAPI, sin JavaScript).
+La interfaz es una **página web** servida por Python (FastAPI): HTML + CSS para lo
+visual, Python para la matemática, y las gráficas se incrustan como imágenes PNG.

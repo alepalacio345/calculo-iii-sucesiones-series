@@ -4,6 +4,11 @@
 **Documento analizado:** `Proyecto Sucesiones y Series.pdf` (2 páginas)
 **Fecha de esta investigación:** 20/11/2026 — *quedan 3 días para la entrega*
 
+> **⚠️ Nota de actualización:** la interfaz final del proyecto es **web (HTML/CSS +
+> FastAPI, sin JavaScript)** — ver [README.md](README.md) y [COMO_EJECUTAR.md](COMO_EJECUTAR.md).
+> Este documento conserva la investigación original (incluida la evaluación de Flet) como
+> referencia histórica; **Flet ya no se usa** en el proyecto.
+
 ---
 
 ## 0. Resumen en una página
@@ -433,19 +438,17 @@ autovalor dominante de cada recurrencia. Conecta los tres puntos del enunciado
 ```powershell
 cd "C:\Users\slara\Documents\calculo III\proyecto"
 
-# el entorno ya está creado con flet 1.1.2
-.\.venv\Scripts\activate
+# instalar (primera vez):
+setup.cmd
 
-flet run app.py            # ventana nativa (la 1ª vez descarga el cliente)
-flet run --web app.py      # en el navegador, sin cliente de escritorio
+# ejecutar la interfaz web (HTML/CSS + FastAPI):
+run_web.cmd                 # abrir http://127.0.0.1:8000
 
 # o sin interfaz, sólo las figuras y los números:
-python scripts\generar_figuras.py
-python scripts\numeros_clave.py
-python tests\test_interfaz.py
+.\.venv\Scripts\python.exe scripts\generar_figuras.py
+.\.venv\Scripts\python.exe scripts\numeros_clave.py
+.\.venv\Scripts\python.exe tests\test_backend.py
 ```
-
-Si `flet run` falla al descargar el cliente, `pip install flet-desktop` y reintentar.
 
 ---
 

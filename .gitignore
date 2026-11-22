@@ -1,17 +1,8 @@
 # Entorno virtual de Python
 .venv/
 
-# Estado local de Flet (storage, cache)
-.flet/
-
-# Caches redirigidas por run_app.cmd (cliente de escritorio + matplotlib)
+# Cachés locales (matplotlib)
 .cache/
-
-# Ruedas descargadas (dependencias)
-.wheels/
-
-# Descargas temporales del cliente de Flet (no deben versionarse)
-flet-windows.zip.*
 
 # Caché de Python
 __pycache__/

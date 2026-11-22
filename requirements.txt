@@ -1,19 +1,11 @@
-# Dependencias del proyecto (probadas en Windows / Python 3.12)
+# Dependencias de la version web (HTML/CSS + FastAPI), sin Flet.
 #
-#   python -m venv .venv
-#   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+#   python -m pip install -r requirements.txt
 #
-# Si `pip install "flet[all]"` se queda colgado resolviendo dependencias,
-# instalar así (fue lo que funcionó aqui):
-#
-#   pip install --no-deps flet flet-charts flet-desktop
-#   pip install msgpack oauthlib repath httpx
+# (o ejecuta .\setup.cmd, que crea el entorno virtual y las instala solas)
 
-flet==1.1.2
-flet-charts==1.1.2
-matplotlib==3.11.2
-numpy==2.5.5
-
-# flet-desktop: cliente de escritorio (ventana nativa). Sin el, usar
-# `flet run --web app.py`. Se descarga aparte:
-#   pip install flet-desktop
+numpy
+matplotlib
+fastapi
+uvicorn
+jinja2

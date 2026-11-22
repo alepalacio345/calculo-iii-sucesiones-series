@@ -1,99 +1,63 @@
 # Proyecto: Sucesiones y Series — Cálculo III
 
 Implementación en Python del proyecto del PDF `Proyecto Sucesiones y Series.pdf`
-(entrega 23/11/2026).
+(entrega 23/11/2026). La interfaz es **web**: HTML + CSS para lo visual y Python
+(FastAPI) para la lógica. **Sin JavaScript.**
 
-> **Lee primero [`INVESTIGACION.md`](INVESTIGACION.md)**: planteamiento, matemática
-> resuelta, entradas/salidas del programa, comparación de frameworks y un hallazgo
-> importante sobre la recurrencia (iii).
+> Documentos clave:
+> [`INFORME.md`](INFORME.md) — el informe del proyecto ·
+> [`EXPLICACION_CODIGO.md`](EXPLICACION_CODIGO.md) — explicación del código (para la defensa) ·
+> [`COMO_EJECUTAR.md`](COMO_EJECUTAR.md) — guía rápida de instalación y ejecución
 
-## Estructura (back-end / front-end separados)
+## Estructura
 
 | Ruta | Contenido |
 |---|---|
-| `app.py` | **punto de entrada** (arranca la interfaz de escritorio) |
 | `backend/sucesiones.py` | **back-end**: toda la matemática (sucesiones, raíces, series, matriz `B`) |
-| `backend/graficas.py` | **back-end**: las 7 figuras, sólo matplotlib (sin UI) |
-| `frontend/app.py` | **front-end (Flet)**: interfaz de escritorio |
-| `web/` | **front-end (HTML/CSS)**: versión web con FastAPI + Jinja2, sin JavaScript |
-| `scripts/` | generación de figuras y números clave |
-| `tests/` | prueba de la interfaz sin abrir ventana |
+| `backend/graficas.py` | **back-end**: las 7 figuras, sólo matplotlib |
+| `web/web_app.py` | **servidor**: FastAPI (lee parámetros, calcula y renderiza) |
+| `web/templates/index.html` | **front-end**: plantilla HTML (Jinja2) |
+| `web/static/style.css` | **front-end**: hoja de estilos |
+| `run_web.cmd` | lanzador del servidor |
+| `setup.cmd` | instalador (crea el entorno virtual y las dependencias) |
+| `scripts/` | figuras y números clave por consola |
+| `tests/` | pruebas del back-end |
 | `salidas/` | figuras PNG ya generadas |
+
+## Requisitos
+
+- Python 3.10 o superior (en el PATH).
+- Dependencias: `numpy`, `matplotlib`, `fastapi`, `uvicorn`, `jinja2` (ver `requirements.txt`).
+
+## Instalación (primera vez)
+
+```powershell
+cd "C:\Users\slara\Documents\calculo III\proyecto"
+.\setup.cmd
+```
+
+`setup.cmd` crea el entorno virtual `.venv` e instala las dependencias.
 
 ## Ejecutar
 
 ```powershell
-cd "C:\Users\slara\Documents\calculo III\proyecto"
-
-# Opción recomendada: ventana nativa (redirige las cachés de flet y matplotlib
-# dentro del proyecto, así no falla si el equipo bloquea escribir en C:\Users\...\.flet)
-.\run_app.cmd
-
-# Alternativas:
-flet run app.py            # ventana nativa directa (necesita poder escribir en ~\.flet)
-flet run --web app.py      # en el navegador (no necesita descargar el cliente)
-```
-
-> **Nota.** `flet run app.py` descarga el cliente de escritorio a `C:\Users\<tú>\.flet`.
-> Si ahí aparece `Acceso denegado` (p. ej. trabajando dentro de un sandbox), usa
-> `.\run_app.cmd`, que guarda esa caché en `.cache\` dentro del proyecto.
-
-## Versión web (HTML/CSS + Python, sin JavaScript)
-
-Interfaz alternativa hecha con **HTML + CSS** (plantillas Jinja2) y **Python**
-(FastAPI), reutilizando el mismo back-end. Las gráficas se incrustan como PNG y la
-interactividad usa formularios normales (recarga de página), **cero JavaScript**.
-
-```powershell
-cd "C:\Users\slara\Documents\calculo III\proyecto"
 .\run_web.cmd
-# abrir en el navegador: http://127.0.0.1:8000
 ```
 
-## Sin interfaz
+Luego abre en el navegador: **http://127.0.0.1:8000**
+
+La página tiene 6 secciones (Resumen, Sucesiones, Diferencias, Serie y áreas, Matriz
+y espectro, Informe), un control para el número de iteraciones y otro para elegir la
+recurrencia (iii) impresa o corregida.
+
+## Sin interfaz (por consola)
 
 ```powershell
-python scripts\generar_figuras.py    # figuras -> salidas/*.png
-python scripts\numeros_clave.py      # raíces, radio espectral, formas cerradas
-python tests\test_interfaz.py        # comprueba que la UI se construye sin GUI
+.\.venv\Scripts\python.exe scripts\generar_figuras.py    # figuras -> salidas/*.png
+.\.venv\Scripts\python.exe scripts\numeros_clave.py      # raíces, radio espectral, n0
+.\.venv\Scripts\python.exe tests\test_backend.py         # pruebas del back-end
 ```
-
-## Documentación del código
-
-El código usa **docstrings** — en Python es el equivalente de Doxygen. Para
-generar HTML navegable a partir de ellas (opcional):
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install pdoc
-.\.venv\Scripts\python.exe -m pdoc backend frontend -o docs
-```
-
-(Con `pdoc` no hace falta configurar nada; `Sphinx` es la alternativa más
-completa si se quiere un sitio de documentación.)
 
 ## Stack
 
-Python 3.12 · Flet 1.1.2 · flet-charts 1.1.2 · matplotlib 3.11 · numpy 2.5
-
-## Subir a GitHub
-
-El historial ya está creado localmente (5+ commits) y el remoto `origin`
-apunta a `https://github.com/alepalacio345/calculo-iii-sucesiones-series.git`.
-Falta una sola cosa, que requiere tu login de GitHub (una vez):
-
-```powershell
-# 1) Crear el repo VACÍO en github.com: New repository →
-#    nombre "calculo-iii-sucesiones-series" → Create (sin README ni .gitignore).
-
-# 2) Empujar (se abrirá el navegador para iniciar sesión en GitHub una vez):
-cd "C:\Users\slara\Documents\calculo III\proyecto"
-git push -u origin main
-```
-
-Alternativa con la CLI de GitHub (instala `gh`, inicia sesión y sube en un paso):
-
-```powershell
-gh auth login
-gh repo create alepalacio345/calculo-iii-sucesiones-series --private --source . --push
-```
-
+Python 3.12 · FastAPI · Uvicorn · Jinja2 (HTML/CSS) · matplotlib · numpy
