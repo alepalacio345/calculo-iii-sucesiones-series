@@ -11,10 +11,11 @@ Implementación en Python del proyecto del PDF `Proyecto Sucesiones y Series.pdf
 
 | Ruta | Contenido |
 |---|---|
-| `app.py` | **punto de entrada** (arranca la interfaz) |
+| `app.py` | **punto de entrada** (arranca la interfaz de escritorio) |
 | `backend/sucesiones.py` | **back-end**: toda la matemática (sucesiones, raíces, series, matriz `B`) |
 | `backend/graficas.py` | **back-end**: las 7 figuras, sólo matplotlib (sin UI) |
-| `frontend/app.py` | **front-end**: interfaz Flet (menú, tablas, figuras, informe) |
+| `frontend/app.py` | **front-end (Flet)**: interfaz de escritorio |
+| `web/` | **front-end (HTML/CSS)**: versión web con FastAPI + Jinja2, sin JavaScript |
 | `scripts/` | generación de figuras y números clave |
 | `tests/` | prueba de la interfaz sin abrir ventana |
 | `salidas/` | figuras PNG ya generadas |
@@ -36,6 +37,18 @@ flet run --web app.py      # en el navegador (no necesita descargar el cliente)
 > **Nota.** `flet run app.py` descarga el cliente de escritorio a `C:\Users\<tú>\.flet`.
 > Si ahí aparece `Acceso denegado` (p. ej. trabajando dentro de un sandbox), usa
 > `.\run_app.cmd`, que guarda esa caché en `.cache\` dentro del proyecto.
+
+## Versión web (HTML/CSS + Python, sin JavaScript)
+
+Interfaz alternativa hecha con **HTML + CSS** (plantillas Jinja2) y **Python**
+(FastAPI), reutilizando el mismo back-end. Las gráficas se incrustan como PNG y la
+interactividad usa formularios normales (recarga de página), **cero JavaScript**.
+
+```powershell
+cd "C:\Users\slara\Documents\calculo III\proyecto"
+.\run_web.cmd
+# abrir en el navegador: http://127.0.0.1:8000
+```
 
 ## Sin interfaz
 

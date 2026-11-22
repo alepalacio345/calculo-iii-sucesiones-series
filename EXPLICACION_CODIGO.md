@@ -143,6 +143,28 @@ decisión de fiabilidad, no de matemática.
 
 ---
 
+## 5bis. La versión web (`web/`) — HTML/CSS + Python, sin JavaScript
+
+Además de la interfaz de escritorio (Flet), hay una **versión web** que usa
+**HTML + CSS** para la parte visual y **Python (FastAPI + Jinja2)** para la lógica,
+reutilizando exactamente el mismo `backend/` (matemática y figuras).
+
+| Archivo | Qué hace |
+|---|---|
+| `web/web_app.py` | Servidor FastAPI: lee `N`, `modelo` y `seccion` de la URL, calcula todo con `backend/` y renderiza la plantilla |
+| `web/templates/index.html` | Plantilla Jinja2 con las 6 secciones |
+| `web/static/style.css` | Hoja de estilos (barra lateral, tarjetas, tablas, figuras) |
+| `run_web.cmd` | Lanzador del servidor |
+
+* Las gráficas se convierten a PNG en memoria (`fig64`) y se incrustan como
+  `<img src="data:image/png;base64,...">`.
+* La interactividad usa **formularios HTML normales** (iteraciones → `<input type="number">`,
+  modelo → `<select>`): al enviar se recarga la página con los nuevos parámetros.
+  **No hay ni una línea de JavaScript.**
+* Ejecutar: `.\run_web.cmd` y abrir http://127.0.0.1:8000.
+
+---
+
 ## 6. `scripts/` y `tests/`
 
 * `generar_figuras.py` → produce las 14 PNG de `salidas/` (las del informe).

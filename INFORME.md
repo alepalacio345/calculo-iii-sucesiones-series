@@ -282,7 +282,10 @@ B = [[28/3, −27, 18], [1, 0, 0], [0, 1, 0]]
 ```powershell
 cd "C:\Users\slara\Documents\calculo III\proyecto"
 
-.\run_app.cmd              # ventana nativa (recomendado)
-flet run --web app.py      # en el navegador
+.\run_app.cmd              # ventana nativa (escritorio, Flet)
+.\run_web.cmd              # versión web (HTML/CSS + Python), abrir http://127.0.0.1:8000
 python scripts\generar_figuras.py    # figuras -> salidas/*.png
 ```
+
+El programa tiene **dos interfaces** que comparten el mismo back-end matemático:
+una de escritorio (Flet) y una web (HTML/CSS con FastAPI, sin JavaScript).

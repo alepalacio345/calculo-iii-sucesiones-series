@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sucesiones y Series — Cálculo III</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <!-- ===================== BARRA LATERAL ===================== -->
+    <aside class="sidebar">
+      <h1 class="logo">Sucesiones<br>y Series</h1>
+      <p class="sub">Cálculo III</p>
+
+      <nav class="nav">
+        {% for key, name in secciones %}
+          <a class="nav-link {{ 'active' if seccion == key else '' }}"
+             href="?seccion={{ key }}&N={{ N }}&modelo={{ modelo }}">{{ name }}</a>
+        {% endfor %}
+      </nav>
+
+      <form class="controls" method="get" action="/">
+        <input type="hidden" name="seccion" value="{{ seccion }}">
+        <label class="campo">
+          <span>Iteraciones (n máx.)</span>
+          <input type="number" name="N" min="5" max="60" value="{{ N }}">
+        </label>
+        <label class="campo">
+          <span>Recurrencia (iii)</span>
+          <select name="modelo">
+            <option value="impreso" {{ 'selected' if modelo == 'impreso' else '' }}>Impresa (−27, +18)</option>
+            <option value="corregido" {{ 'selected' if modelo == 'corregido' else '' }}>Corregida (−21, +6)</option>
+          </select>
+        </label>
+        <button class="btn" type="submit">Actualizar</button>
+      </form>
+    </aside>
+
+    <!-- ===================== CONTENIDO ===================== -->
+    <main class="content">
+
+      <!-- ============ RESUMEN ============ -->
+      {% if seccion == 'resumen' %}
+      <h2 class="titulo">El problema</h2>
+      <p class="bajada">Triángulo equilátero de área <code>T₀ = 1</code>, subdividido indefinidamente.</p>
+
+      <section class="tarjeta">
+        <p>En cada paso se une el <strong>baricentro</strong> con los tres vértices: el triángulo
+        queda partido en <strong>tres triángulos congruentes de área igual a un tercio</strong> del
+        anterior. Se conserva uno y se repite el proceso.</p>
+        <p class="formula">Término general: &nbsp; Tₙ = 3⁻ⁿ , &nbsp; T₀ = 1</p>
+      </section>
+
+      <div class="metricas">
+        <div class="metrica"><span class="etiqueta">T₁</span><span class="valor">{{ T1 }}</span></div>
+        <div class="metrica"><span class="etiqueta">T₅</span><span class="valor">{{ T5 }}</span></div>
+        <div class="metrica"><span class="etiqueta">T<sub>{{ n0 }}</sub></span><span class="valor">{{ Tn }}</span></div>
+        <div class="metrica"><span class="etiqueta">Σ Tₙ (n≥1)</span><span class="valor acento">1/2 = 0.5</span></div>
+        <div class="metrica"><span class="etiqueta">Σ Dₙ (n≥1)</span><span class="valor acento">1 = T₀</span></div>
+      </div>
+
+      <img class="figura" src="data:image/png;base64,{{ fig_triangulos }}" alt="Subdivisión geométrica del triángulo">
+      {% endif %}
+
+      <!-- ============ SUCESIONES ============ -->
+      {% if seccion == 'sucesiones' %}
+      <h2 class="titulo">Comparación de las cuatro sucesiones</h2>
+      <p class="bajada">Tₙ exacta frente a los tres algoritmos recursivos.</p>
+
+      <img class="figura" src="data:image/png;base64,{{ fig_sucesiones }}" alt="Las cuatro sucesiones">
+      <img class="figura" src="data:image/png;base64,{{ fig_detalle }}" alt="Paneles por recurrencia">
+
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead><tr>{% for c in cab_sucesiones %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for f in filas_sucesiones %}<tr>{% for c in f %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- ============ DIFERENCIAS ============ -->
+      {% if seccion == 'diferencias' %}
+      <h2 class="titulo">Diferencias respecto de Tₙ</h2>
+      <p class="bajada">|Tₙ − xₙ|: quién tiende a cero y quién no.</p>
+
+      <div class="metricas">
+        <div class="metrica"><span class="etiqueta">n₀ de rₙ</span><span class="valor">{{ n0r }}</span></div>
+        <div class="metrica"><span class="etiqueta">n₀ de pₙ</span><span class="valor">{{ n0p }}</span></div>
+        <div class="metrica"><span class="etiqueta">n₀ de qₙ</span><span class="valor">{{ n0q }}</span></div>
+        <div class="metrica"><span class="etiqueta">|T−p| &gt; T desde n</span><span class="valor">{{ n100p }}</span></div>
+        <div class="metrica"><span class="etiqueta">|T−q| &gt; T desde n</span><span class="valor">{{ n100q }}</span></div>
+      </div>
+
+      <img class="figura" src="data:image/png;base64,{{ fig_dif_abs }}" alt="Diferencias absolutas">
+      <img class="figura" src="data:image/png;base64,{{ fig_dif_rel }}" alt="Diferencias relativas">
+
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead><tr>{% for c in cab_dif %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for f in filas_dif %}<tr>{% for c in f %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- ============ SERIE ============ -->
+      {% if seccion == 'serie' %}
+      <h2 class="titulo">Serie infinita y áreas descartadas</h2>
+      <p class="bajada">S = Σ Tₙ y Dₙ = 2·Tₙ.</p>
+
+      <div class="metricas">
+        <div class="metrica"><span class="etiqueta">Σ Tₙ (n≥1)</span><span class="valor acento">1/2</span></div>
+        <div class="metrica"><span class="etiqueta">S<sub>{{ N }}</sub></span><span class="valor">{{ S_N }}</span></div>
+        <div class="metrica"><span class="etiqueta">Σ Dₖ (k≤{{ N }})</span><span class="valor">{{ SD_N }}</span></div>
+        <div class="metrica"><span class="etiqueta">Σ Dₙ (n≥1)</span><span class="valor acento">1 = T₀</span></div>
+      </div>
+
+      <img class="figura" src="data:image/png;base64,{{ fig_serie }}" alt="Serie y áreas descartadas">
+
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead><tr>{% for c in cab_serie %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for f in filas_serie %}<tr>{% for c in f %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- ============ MATRIZ ============ -->
+      {% if seccion == 'matriz' %}
+      <h2 class="titulo">Enfoque matricial y análisis espectral</h2>
+      <p class="bajada">Xₙ = B·Xₙ₋₁ con Xₙ = [qₙ, qₙ₋₁, qₙ₋₂]ᵀ.</p>
+
+      <div class="metricas">
+        <div class="metrica ancha"><span class="etiqueta">P(λ) = det(B − λI)</span><span class="valor">{{ polinomio }}</span></div>
+        <div class="metrica"><span class="etiqueta">ρ(B)</span><span class="valor {{ 'peligro' if rho|float > 1 else 'ok' }}">{{ rho }}</span></div>
+        <div class="metrica"><span class="etiqueta">tr(B)</span><span class="valor">{{ traza }}</span></div>
+        <div class="metrica"><span class="etiqueta">det(B)</span><span class="valor">{{ det }}</span></div>
+      </div>
+
+      <div class="dos-col">
+        <div>
+          <h3 class="subtitulo">Matriz compañera B</h3>
+          <table class="tabla matriz">
+            {% for fila in filas_B %}
+            <tr>{% for c in fila %}<td>{{ c }}</td>{% endfor %}</tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div>
+          <h3 class="subtitulo">Autovalores y módulos</h3>
+          <table class="tabla">
+            <thead><tr><th>λ</th><th>|λ|</th></tr></thead>
+            <tbody>
+              {% for a in autos %}<tr>{% for c in a %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <img class="figura" src="data:image/png;base64,{{ fig_autovalores }}" alt="Autovalores de B">
+
+      <section class="tarjeta">
+        <p><code>det(B − λI)</code> coincide con el polinomio de la recurrencia:
+        <strong>{{ 'sí' if coincide else 'no' }}</strong>.</p>
+        <p><code>ρ(B) &gt; 1</code> implica que el modo dominante crece como ρⁿ: el error de
+        redondeo se amplifica en cada paso. Esa es la justificación numérica de la
+        divergencia observada.</p>
+      </section>
+      {% endif %}
+
+      <!-- ============ INFORME ============ -->
+      {% if seccion == 'informe' %}
+      <h2 class="titulo">Informe</h2>
+      <p class="bajada">Borrador del análisis para el documento final.</p>
+      <section class="tarjeta informe">{{ informe_html | safe }}</section>
+      {% endif %}
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+/* ===========================================================================
+   Sucesiones y Series — hoja de estilos
+   =========================================================================== */
+
+:root {
+  --acento: #4f46e5;          /* índigo */
+  --acento-2: #7c3aed;        /* violeta */
+  --fondo: #f4f5fb;
+  --tarjeta: #ffffff;
+  --texto: #1e2235;
+  --texto-suave: #5b6178;
+  --borde: #e5e7f0;
+  --sidebar: #1e2235;
+  --sidebar-texto: #e7e9f5;
+  --peligro: #c1121f;
+  --ok: #0a7a3d;
+  --radio: 14px;
+  --sombra: 0 1px 3px rgba(30, 34, 53, 0.08), 0 6px 18px rgba(30, 34, 53, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.55;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 264px 1fr;
+  min-height: 100vh;
+}
+
+/* --------------------------- barra lateral --------------------------- */
+.sidebar {
+  background: linear-gradient(180deg, var(--sidebar), #12151f);
+  color: var(--sidebar-texto);
+  padding: 26px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+  background: linear-gradient(90deg, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub {
+  margin: -14px 0 0;
+  font-size: 0.82rem;
+  color: #8f95ad;
+}
+
+.nav { display: flex; flex-direction: column; gap: 4px; }
+
+.nav-link {
+  color: var(--sidebar-texto);
+  text-decoration: none;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 0.93rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-link:hover { background: rgba(255, 255, 255, 0.08); }
+
+.nav-link.active {
+  background: linear-gradient(90deg, var(--acento), var(--acento-2));
+  color: #fff;
+  font-weight: 600;
+}
+
+.controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.campo { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; color: #aab0c5; }
+
+.campo input, .campo select {
+  background: #2a2f45;
+  color: #fff;
+  border: 1px solid #3a4060;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.campo input:focus, .campo select:focus { border-color: var(--acento); }
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(90deg, var(--acento), var(--acento-2));
+  transition: filter 0.15s;
+}
+
+.btn:hover { filter: brightness(1.1); }
+
+/* --------------------------- contenido --------------------------- */
+.content { padding: 30px 38px 60px; max-width: 1080px; }
+
+.titulo { margin: 0 0 4px; font-size: 1.7rem; }
+
+.bajada { margin: 0 0 22px; color: var(--texto-suave); }
+
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+}
+
+.formula {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 12px 0 0;
+  color: var(--acento);
+}
+
+.subtitulo { font-size: 1rem; margin: 4px 0 10px; color: var(--texto); }
+
+/* --------------------------- métricas --------------------------- */
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.metrica {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metrica.ancha { grid-column: span 2; }
+
+.etiqueta { font-size: 0.78rem; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.4px; }
+
+.valor { font-size: 1.25rem; font-weight: 700; word-break: break-word; }
+
+.valor.acento { color: var(--acento); }
+.valor.peligro { color: var(--peligro); }
+.valor.ok { color: var(--ok); }
+
+/* --------------------------- figuras --------------------------- */
+.figura {
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  margin: 0 auto 20px;
+}
+
+/* --------------------------- tablas --------------------------- */
+.tabla-wrap { overflow-x: auto; border-radius: var(--radio); box-shadow: var(--sombra); margin-bottom: 20px; }
+
+.tabla {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla th {
+  background: var(--sidebar);
+  color: #fff;
+  text-align: right;
+  padding: 9px 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tabla th:first-child, .tabla td:first-child { text-align: left; }
+
+.tabla td { padding: 7px 12px; text-align: right; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+
+.tabla tbody tr:nth-child(even) { background: #fafafe; }
+.tabla tbody tr:hover { background: #eef0fb; }
+
+.tabla.matriz td { text-align: center; font-size: 1rem; padding: 12px 18px; }
+
+/* --------------------------- informe --------------------------- */
+.informe h3 { margin: 18px 0 6px; color: var(--acento); }
+.informe h4 { margin: 14px 0 4px; }
+.informe code {
+  background: #eef0fb;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.dos-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.dos-col .tabla { box-shadow: none; border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden; }
+
+/* --------------------------- responsive --------------------------- */
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .content { padding: 22px 16px; }
+  .dos-col { grid-template-columns: 1fr; }
+  .metrica.ancha { grid-column: span 1; }
+}
