@@ -1,3 +1,9 @@
+"""
+@file numeros_clave.py
+@brief Imprime por consola los numeros clave del proyecto.
+@details Muestra raices, radio espectral, indices n0, formas cerradas y la
+matriz B para la recurrencia (iii) impresa y la corregida.
+"""
 import os
 import sys
 

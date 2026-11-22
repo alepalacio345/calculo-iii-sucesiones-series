@@ -1,12 +1,14 @@
 """
-Figuras del proyecto. Solo matplotlib: devuelven objetos Figure que la app Flet
-pinta con MatplotlibChart y que los scripts pueden guardar como PNG.
+@file graficas.py
+@brief Figuras del proyecto (solo matplotlib).
+@details Cada funcion devuelve un objeto Figure que la interfaz web convierte a
+PNG y que los scripts pueden guardar como archivo.
 
-Convencion de colores (la misma en todas las figuras):
-    T_n  negro, continua, gruesa      (referencia exacta)
-    r_n  azul, discontinua
-    p_n  naranja, raya-punto
-    q_n  rojo, continua
+@par Convencion de colores (la misma en todas las figuras)
+- T_n  negro, continua, gruesa (referencia exacta)
+- r_n  azul, discontinua
+- p_n  naranja, raya-punto
+- q_n  rojo, continua
 """
 
 from __future__ import annotations
@@ -39,7 +41,12 @@ C_Q = "#c1121f"
 
 
 def _titulo(ax, texto: str) -> None:
-    """Titulo de panel, en negrita y alineado a la izquierda."""
+    """
+    @brief Titulo de panel, en negrita y alineado a la izquierda.
+    @param ax Ejes de matplotlib donde se escribe el titulo.
+    @param texto Texto del titulo.
+    @return None.
+    """
     ax.set_title(texto, fontweight="bold", loc="left")
 
 
@@ -48,7 +55,12 @@ def _titulo(ax, texto: str) -> None:
 # ---------------------------------------------------------------------------
 
 def fig_sucesiones(d: dict, modelo: str = "impreso") -> Figure:
-    """Paneles comparativos: escala lineal y escala logaritmica."""
+    """
+    @brief Paneles comparativos: escala lineal y escala logaritmica.
+    @param d Diccionario de :func:`backend.sucesiones.tabla`.
+    @param modelo "impreso" o "corregido" (solo etiqueta la figura).
+    @return Objeto Figure con dos paneles.
+    """
     n = np.array(d["n"])
     T = np.array(d["T"])
     r = np.array(d["r"])
@@ -86,7 +98,12 @@ def fig_sucesiones(d: dict, modelo: str = "impreso") -> Figure:
 
 
 def fig_sucesiones_detalle(d: dict, modelo: str = "impreso") -> Figure:
-    """Un panel por recurrencia, con la referencia T_n encima."""
+    """
+    @brief Un panel por recurrencia, con la referencia T_n encima.
+    @param d Diccionario de :func:`backend.sucesiones.tabla`.
+    @param modelo "impreso" o "corregido".
+    @return Objeto Figure con cuatro paneles.
+    """
     n = np.array(d["n"])
     T = np.array(d["T"])
     r = np.array(d["r"])
@@ -131,11 +148,11 @@ def fig_sucesiones_detalle(d: dict, modelo: str = "impreso") -> Figure:
 # ---------------------------------------------------------------------------
 
 def fig_diferencias(d: dict, relativa: bool = False) -> Figure:
-    """Figura de errores: (a) |T_n - x_n| y (b) su raiz n-esima -> |lambda|.
-
-    Args:
-        d: diccionario de :func:`backend.sucesiones.tabla`.
-        relativa: ``True`` para usar el error relativo en el panel (a).
+    """
+    @brief Figura de errores: (a) |T_n - x_n| y (b) su raiz n-esima -> |lambda|.
+    @param d Diccionario de :func:`backend.sucesiones.tabla`.
+    @param relativa True para usar el error relativo en el panel (a).
+    @return Objeto Figure con dos paneles.
     """
     n = np.array(d["n"])
     fig = plt.figure(figsize=(9.2, 4.4), dpi=110)
@@ -195,7 +212,11 @@ def fig_diferencias(d: dict, relativa: bool = False) -> Figure:
 # ---------------------------------------------------------------------------
 
 def fig_serie(d: dict) -> Figure:
-    """Serie S_N -> 1/2 y areas descartadas D_n cuya suma tiende a 1."""
+    """
+    @brief Serie S_N -> 1/2 y areas descartadas D_n cuya suma tiende a 1.
+    @param d Diccionario de :func:`backend.sucesiones.tabla`.
+    @return Objeto Figure con dos paneles.
+    """
     n = np.array(d["n"])
     S = np.array(d["S"])
     SD = np.array(d["SD"])
@@ -232,13 +253,23 @@ def fig_serie(d: dict) -> Figure:
 # ---------------------------------------------------------------------------
 
 def _hijos(v1, v2, v3):
-    """Divide el triangulo (v1, v2, v3) por el baricentro en 3 triangulos."""
+    """
+    @brief Divide el triangulo (v1, v2, v3) por el baricentro en 3 triangulos.
+    @param v1 Primer vertice (array 2D de numpy).
+    @param v2 Segundo vertice.
+    @param v3 Tercer vertice.
+    @return Tupla (lista de los 3 triangulos hijos, baricentro G).
+    """
     G = (v1 + v2 + v3) / 3.0
     return [(v1, v2, G), (v2, v3, G), (v3, v1, G)], G
 
 
 def fig_triangulos(niveles: int = 3) -> Figure:
-    """Dibuja la cadena de triangulos T_0 > T_1 > ... y las zonas descartadas."""
+    """
+    @brief Dibuja la cadena de triangulos T_0 > T_1 > ... y las zonas descartadas.
+    @param niveles Numero de niveles de subdivision a dibujar (por defecto 3).
+    @return Objeto Figure con dos paneles.
+    """
     sq3 = math.sqrt(3) / 2
     v1 = np.array([0.0, 0.0])
     v2 = np.array([1.0, 0.0])
@@ -302,7 +333,12 @@ def fig_triangulos(niveles: int = 3) -> Figure:
 # ---------------------------------------------------------------------------
 
 def fig_autovalores(info: dict, titulo: str = "") -> Figure:
-    """Autovalores de B en el plano complejo, con el circulo unitario y rho."""
+    """
+    @brief Autovalores de B en el plano complejo, con el circulo unitario y rho.
+    @param info Diccionario de :func:`backend.sucesiones.analisis_B`.
+    @param titulo Titulo opcional del panel.
+    @return Objeto Figure.
+    """
     auto = info["autovalores"]
     rho = info["radio_espectral"]
 
@@ -338,16 +374,13 @@ def fig_autovalores(info: dict, titulo: str = "") -> Figure:
 # ---------------------------------------------------------------------------
 
 def guardar_todas(d: dict, info_B: dict, carpeta: str, sufijo: str = "") -> list[str]:
-    """Genera las 7 figuras como PNG y devuelve las rutas.
-
-    Args:
-        d: diccionario de :func:`backend.sucesiones.tabla`.
-        info_B: diccionario de :func:`backend.sucesiones.analisis_B`.
-        carpeta: directorio de salida (se crea si no existe).
-        sufijo: texto opcional para distinguir variantes (p. ej. ``"_variante"``).
-
-    Returns:
-        Lista de rutas de los archivos PNG generados.
+    """
+    @brief Genera las 7 figuras como PNG y devuelve las rutas.
+    @param d Diccionario de :func:`backend.sucesiones.tabla`.
+    @param info_B Diccionario de :func:`backend.sucesiones.analisis_B`.
+    @param carpeta Directorio de salida (se crea si no existe).
+    @param sufijo Texto opcional para distinguir variantes (p. ej. "_variante").
+    @return Lista de rutas de los archivos PNG generados.
     """
     import os
     os.makedirs(carpeta, exist_ok=True)

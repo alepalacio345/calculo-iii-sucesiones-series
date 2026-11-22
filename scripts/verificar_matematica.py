@@ -1,4 +1,9 @@
-"""Verificacion numerica del proyecto Sucesiones y Series."""
+"""
+@file verificar_matematica.py
+@brief Verificacion numerica del proyecto Sucesiones y Series.
+@details Comprueba de forma independiente el termino general, las tres
+recurrencias, las raices, la serie y la matriz B, e imprime los resultados.
+"""
 import numpy as np
 from fractions import Fraction as F
 
@@ -6,7 +11,13 @@ np.set_printoptions(precision=10, suppress=False)
 
 N = 20
 
-def T(n):  return F(1, 3) ** n
+def T(n):
+    """
+    @brief Termino general exacto T(n) = (1/3)^n.
+    @param n Indice del termino (n >= 0).
+    @return Fraccion 1/3^n.
+    """
+    return F(1, 3) ** n
 
 print("=" * 70)
 print("1) Tn = 3^-n")

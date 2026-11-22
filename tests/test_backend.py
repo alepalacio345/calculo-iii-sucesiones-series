@@ -1,7 +1,8 @@
-"""Pruebas del back-end matematico, las figuras y la app web (sin abrir navegador).
-
-Ejecutar:
-    .\\.venv\\Scripts\\python.exe tests\\test_backend.py
+"""
+@file test_backend.py
+@brief Pruebas del back-end matematico, las figuras y la app web (sin navegador).
+@details Ejecutar con: .\\.venv\\Scripts\\python.exe tests\\test_backend.py
+Imprime OK/FALLA por cada comprobacion y termina con el numero de fallos.
 """
 
 import os
@@ -22,6 +23,13 @@ fallos = 0
 
 
 def check(nombre: str, cond: bool, detalle: str = "") -> None:
+    """
+    @brief Registra el resultado de una comprobacion.
+    @param nombre Nombre de la comprobacion.
+    @param cond Resultado booleano de la comprobacion.
+    @param detalle Texto adicional que se muestra si falla.
+    @return None.
+    """
     global fallos
     if cond:
         print(f"OK   {nombre}")

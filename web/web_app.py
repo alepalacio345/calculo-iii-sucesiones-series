@@ -1,18 +1,17 @@
 """
-Version WEB del proyecto "Sucesiones y Series".
+@file web_app.py
+@brief Version WEB del proyecto "Sucesiones y Series".
+@details
+Frontend: HTML + CSS (plantillas Jinja2), SIN JavaScript.
+Backend : Python (FastAPI) + el mismo backend/sucesiones.py y graficas.py.
 
-    Frontend: HTML + CSS (plantillas Jinja2), SIN JavaScript.
-    Backend : Python (FastAPI) + el mismo backend/sucesiones.py y graficas.py.
+@par Ejecutar (desde la raiz del proyecto)
+    .venv\\Scripts\\python.exe -m uvicorn web.web_app:app --port 8000
 
-Ejecutar (desde la raiz del proyecto):
-
-    .venv\Scripts\python.exe -m uvicorn web.web_app:app --port 8000
-
-Luego abrir http://127.0.0.1:8000 en el navegador.
-
-Toda la interactividad usa formularios HTML normales (recarga de pagina):
-no hay ni una linea de JavaScript. Las graficas de matplotlib se convierten a
-PNG en memoria y se incrustan como <img src="data:image/png;base64,...">.
+Luego abrir http://127.0.0.1:8000 en el navegador. Toda la interactividad usa
+formularios HTML normales (recarga de pagina): no hay ni una linea de
+JavaScript. Las graficas de matplotlib se convierten a PNG en memoria y se
+incrustan como <img src="data:image/png;base64,...">.
 """
 
 from __future__ import annotations
@@ -58,7 +57,12 @@ SECCIONES = [
 # ---------------------------------------------------------------------------
 
 def fmt(v, dec: int = 4) -> str:
-    """Numero legible: notacion cientifica solo cuando hace falta."""
+    """
+    @brief Numero legible: notacion cientifica solo cuando hace falta.
+    @param v Valor a formatear (float, complex o None).
+    @param dec Numero de decimales (por defecto 4).
+    @return Cadena formateada.
+    """
     if v is None:
         return "—"
     if isinstance(v, complex):
@@ -80,7 +84,11 @@ def fmt(v, dec: int = 4) -> str:
 
 
 def fig64(fig) -> str:
-    """Convierte una Figure de matplotlib a PNG base64 para <img>."""
+    """
+    @brief Convierte una Figure de matplotlib a PNG base64 para <img>.
+    @param fig Objeto Figure de matplotlib.
+    @return Cadena base64 del PNG (sin el prefijo data:).
+    """
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=110, bbox_inches="tight", facecolor="white")
     import matplotlib.pyplot as plt
@@ -94,6 +102,13 @@ def fig64(fig) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
+    """
+    @brief Ruta principal: calcula y entrega la pagina web.
+    @details Lee N, modelo y seccion de la URL, calcula con el backend y
+    renderiza la plantilla con las tablas y figuras de la seccion activa.
+    @param request Peticion HTTP (FastAPI).
+    @return Respuesta HTML con la plantilla renderizada.
+    """
     N = int(request.query_params.get("N", 30))
     modelo = request.query_params.get("modelo", "impreso")
     seccion = request.query_params.get("seccion", "resumen")
@@ -190,7 +205,12 @@ def index(request: Request):
 
 
 def _informe_html(impreso: bool, info: dict) -> str:
-    """Borrador del analisis en HTML (sin LaTeX, legible)."""
+    """
+    @brief Borrador del analisis en HTML (sin LaTeX, legible).
+    @param impreso True para la version impresa de (iii); False la corregida.
+    @param info Diccionario de :func:`backend.sucesiones.analisis_B`.
+    @return Cadena HTML con el texto del informe.
+    """
     rho = info["radio_espectral"]
     et = "impresa (−27, +18)" if impreso else "corregida (−21, +6)"
     return f"""
