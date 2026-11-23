@@ -1,8 +1,13 @@
 """
 @file test_backend.py
-@brief Pruebas del back-end matematico, las figuras y la app web (sin navegador).
-@details Ejecutar con: .\\.venv\\Scripts\\python.exe tests\\test_backend.py
-Imprime OK/FALLA por cada comprobacion y termina con el numero de fallos.
+@brief Pruebas automaticas del backend y de las figuras (sin abrir navegador).
+@details
+Comprueba el termino general, las tablas con varios N, el analisis matricial,
+las raices conocidas, la serie, las areas descartadas y que las figuras se
+generen. Imprime OK o FALLA por cada comprobacion y termina con el numero de
+fallos (0 significa que todo esta bien).
+@par Ejecutar
+    .\\.venv\\Scripts\\python.exe tests\\test_backend.py
 """
 
 import os

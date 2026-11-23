@@ -1,9 +1,16 @@
 """
 @file web_app.py
-@brief Version WEB del proyecto "Sucesiones y Series".
+@brief Servidor web del proyecto "Sucesiones y Series" (FastAPI + HTML/CSS).
 @details
-Frontend: HTML + CSS (plantillas Jinja2), SIN JavaScript.
-Backend : Python (FastAPI) + el mismo backend/sucesiones.py y graficas.py.
+Este archivo es el puente entre los calculos y la pagina: recibe la peticion del
+navegador, llama al backend matematico, genera las figuras y devuelve el HTML ya
+relleno. La parte visual vive en templates/index.html y static/style.css.
+
+El recorrido de una peticion es siempre el mismo:
+1) se leen N, modelo y seccion de la URL;
+2) se calculan los datos con backend/sucesiones.py;
+3) se generan las figuras necesarias y se convierten a PNG en base64;
+4) se renderiza la plantilla con esos datos.
 
 @par Ejecutar (desde la raiz del proyecto)
     .venv\\Scripts\\python.exe -m uvicorn web.web_app:app --port 8000
@@ -58,7 +65,12 @@ SECCIONES = [
 
 def fmt(v, dec: int = 4) -> str:
     """
-    @brief Numero legible: notacion cientifica solo cuando hace falta.
+    @brief Convierte un numero en un texto corto y legible para las tablas.
+    @details
+    Se adapta al tipo de valor: los numeros muy grandes o muy pequenos se
+    muestran en notacion cientifica, los complejos se escriben como a + bi y los
+    None se muestran como un guion. Asi las tablas de la pagina quedan ordenadas
+    y son faciles de leer sin escribir formato en cada celda.
     @param v Valor a formatear (float, complex o None).
     @param dec Numero de decimales (por defecto 4).
     @return Cadena formateada.
@@ -85,7 +97,13 @@ def fmt(v, dec: int = 4) -> str:
 
 def fig64(fig) -> str:
     """
-    @brief Convierte una Figure de matplotlib a PNG base64 para <img>.
+    @brief Convierte una figura de matplotlib en una imagen PNG codificada en base64.
+    @details
+    Guarda la figura en un buffer de memoria (no en disco), lee los bytes del PNG
+    y los pasa a base64. Ese texto se pega directamente en el HTML como
+    <img src="data:image/png;base64,...">, de modo que la pagina muestra la
+    grafica sin necesitar archivos ni JavaScript. Despues cierra la figura para
+    liberar memoria.
     @param fig Objeto Figure de matplotlib.
     @return Cadena base64 del PNG (sin el prefijo data:).
     """
@@ -103,11 +121,15 @@ def fig64(fig) -> str:
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
     """
-    @brief Ruta principal: calcula y entrega la pagina web.
-    @details Lee N, modelo y seccion de la URL, calcula con el backend y
-    renderiza la plantilla con las tablas y figuras de la seccion activa.
+    @brief Ruta principal: calcula todo y entrega la pagina web.
+    @details
+    Es la unica ruta de la aplicacion. Lee de la URL tres parametros opcionales:
+    N (numero de iteraciones, por defecto 30), modelo ("impreso" o "corregido")
+    y seccion (que pestana mostrar). Si algun valor llega mal, lo reemplaza por
+    uno valido. Luego calcula los datos con el backend, prepara las figuras y las
+    tablas de la seccion pedida y renderiza la plantilla.
     @param request Peticion HTTP (FastAPI).
-    @return Respuesta HTML con la plantilla renderizada.
+    @return Respuesta HTML con la plantilla ya rellena.
     """
     N = int(request.query_params.get("N", 30))
     modelo = request.query_params.get("modelo", "impreso")
@@ -206,7 +228,12 @@ def index(request: Request):
 
 def _informe_html(impreso: bool, info: dict) -> str:
     """
-    @brief Borrador del analisis en HTML (sin LaTeX, legible).
+    @brief Arma el texto del informe (analisis) en HTML.
+    @details
+    Genera un borrador del analisis que se muestra en la pestana "Informe": un
+    resumen del polinomio caracteristico, las raices, el radio espectral y la
+    conclusion sobre la convergencia. Se construye como HTML sencillo (sin LaTeX)
+    para que se lea directamente en el navegador.
     @param impreso True para la version impresa de (iii); False la corregida.
     @param info Diccionario de :func:`backend.sucesiones.analisis_B`.
     @return Cadena HTML con el texto del informe.

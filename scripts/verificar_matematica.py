@@ -1,8 +1,10 @@
 """
 @file verificar_matematica.py
-@brief Verificacion numerica del proyecto Sucesiones y Series.
-@details Comprueba de forma independiente el termino general, las tres
-recurrencias, las raices, la serie y la matriz B, e imprime los resultados.
+@brief Verificacion numerica independiente del proyecto.
+@details
+Repite los calculos principales (termino general, las tres recurrencias, las
+raices, la serie y la matriz B) con codigo escrito aparte, para comprobar que
+los resultados coinciden con los del backend. Es una comprobacion de respaldo.
 """
 import numpy as np
 from fractions import Fraction as F

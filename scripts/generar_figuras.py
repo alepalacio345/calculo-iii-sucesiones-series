@@ -1,8 +1,10 @@
 """
 @file generar_figuras.py
 @brief Genera todas las figuras del proyecto a PNG (sin interfaz).
-@details Calcula las tablas con el backend para los dos modelos (impreso y
-corregido) y guarda las 7 figuras de cada uno en la carpeta salidas/.
+@details
+Calcula las tablas con el backend para los dos modelos (impreso y corregido) y
+guarda las 7 figuras de cada uno en la carpeta salidas/. Tambien imprime por
+consola los indices de divergencia y la forma cerrada, para poder revisarlos.
 """
 import os
 import sys

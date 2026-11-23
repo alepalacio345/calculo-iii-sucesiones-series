@@ -1,14 +1,25 @@
 """
 @file graficas.py
-@brief Figuras del proyecto (solo matplotlib).
-@details Cada funcion devuelve un objeto Figure que la interfaz web convierte a
-PNG y que los scripts pueden guardar como archivo.
+@brief Dibuja todas las figuras del proyecto (solo matplotlib).
+@details
+Cada funcion de este archivo construye una figura y la devuelve como objeto
+Figure, sin mostrarla ni guardarla. Eso permite dos usos: la pagina web la
+convierte a PNG para mostrarla, y los scripts la guardan como archivo.
 
 @par Convencion de colores (la misma en todas las figuras)
 - T_n  negro, continua, gruesa (referencia exacta)
 - r_n  azul, discontinua
 - p_n  naranja, raya-punto
 - q_n  rojo, continua
+
+@par Figuras disponibles
+- fig_sucesiones: las cuatro sucesiones (escala lineal y logaritmica)
+- fig_sucesiones_detalle: un panel por recurrencia
+- fig_diferencias: errores absolutos y raiz n-esima del error
+- fig_serie: serie de areas y areas descartadas
+- fig_triangulos: cadena de triangulos y reparto 1/3 + 2/3
+- fig_autovalores: autovalores de B en el plano complejo
+- guardar_todas: genera todas las figuras como PNG
 """
 
 from __future__ import annotations
@@ -42,9 +53,12 @@ C_Q = "#c1121f"
 
 def _titulo(ax, texto: str) -> None:
     """
-    @brief Titulo de panel, en negrita y alineado a la izquierda.
+    @brief Escribe el titulo de un panel, en negrita y a la izquierda.
+    @details
+    Es una ayuda interna para mantener el mismo estilo de titulo en todas las
+    figuras. No forma parte del resultado matematico, solo del aspecto visual.
     @param ax Ejes de matplotlib donde se escribe el titulo.
-    @param texto Texto del titulo.
+    @param texto Texto que se muestra como titulo.
     @return None.
     """
     ax.set_title(texto, fontweight="bold", loc="left")
@@ -56,9 +70,15 @@ def _titulo(ax, texto: str) -> None:
 
 def fig_sucesiones(d: dict, modelo: str = "impreso") -> Figure:
     """
-    @brief Paneles comparativos: escala lineal y escala logaritmica.
+    @brief Dibuja las cuatro sucesiones en dos paneles (lineal y logaritmico).
+    @details
+    Es la figura comparativa principal: muestra T_n, r_n, p_n y q_n juntas. En el
+    panel lineal se ve como se separan unas de otras; en el panel logaritmico se
+    aprecia que T_n y r_n siguen una linea recta (decrecen como 3^(-n)), mientras
+    que p_n y q_n acaban creciendo. La escala logaritmica es necesaria porque los
+    valores abarcan muchos ordenes de magnitud.
     @param d Diccionario de :func:`backend.sucesiones.tabla`.
-    @param modelo "impreso" o "corregido" (solo etiqueta la figura).
+    @param modelo "impreso" o "corregido"; solo se usa para etiquetar la figura.
     @return Objeto Figure con dos paneles.
     """
     n = np.array(d["n"])
@@ -99,7 +119,12 @@ def fig_sucesiones(d: dict, modelo: str = "impreso") -> Figure:
 
 def fig_sucesiones_detalle(d: dict, modelo: str = "impreso") -> Figure:
     """
-    @brief Un panel por recurrencia, con la referencia T_n encima.
+    @brief Dibuja un panel por recurrencia, con la referencia T_n encima.
+    @details
+    Separa cada recurrencia en su propio panel (en escala logaritmica) y dibuja
+    encima la referencia T_n para comparar. Al lado de cada panel se indican el
+    radio espectral y el indice de divergencia. Es util para ver de un vistazo
+    que r_n sigue a T_n mientras p_n y q_n se separan.
     @param d Diccionario de :func:`backend.sucesiones.tabla`.
     @param modelo "impreso" o "corregido".
     @return Objeto Figure con cuatro paneles.
@@ -149,9 +174,14 @@ def fig_sucesiones_detalle(d: dict, modelo: str = "impreso") -> Figure:
 
 def fig_diferencias(d: dict, relativa: bool = False) -> Figure:
     """
-    @brief Figura de errores: (a) |T_n - x_n| y (b) su raiz n-esima -> |lambda|.
+    @brief Dibuja los errores de cada recurrencia respecto a T_n.
+    @details
+    El panel (a) muestra |T_n - x_n| para las tres recurrencias. El panel (b)
+    muestra la raiz n-esima de ese error, que tiende al autovalor dominante de
+    cada recurrencia (1/3, 3 y 4.369). Esa segunda grafica es la que conecta la
+    parte numerica con la parte algebraica: el error crece como |lambda|^n.
     @param d Diccionario de :func:`backend.sucesiones.tabla`.
-    @param relativa True para usar el error relativo en el panel (a).
+    @param relativa True para dibujar el error relativo en el panel (a).
     @return Objeto Figure con dos paneles.
     """
     n = np.array(d["n"])
@@ -213,7 +243,12 @@ def fig_diferencias(d: dict, relativa: bool = False) -> Figure:
 
 def fig_serie(d: dict) -> Figure:
     """
-    @brief Serie S_N -> 1/2 y areas descartadas D_n cuya suma tiende a 1.
+    @brief Dibuja la serie de las areas conservadas y las areas descartadas.
+    @details
+    El panel (a) muestra las sumas parciales S_N, que se acercan a 1/2. El panel
+    (b) muestra las areas descartadas acumuladas, que se acercan a 1 = T_0. Con
+    las dos graficas se ve la interpretacion geometrica pedida: la mitad se
+    conserva y la otra mitad se descarta.
     @param d Diccionario de :func:`backend.sucesiones.tabla`.
     @return Objeto Figure con dos paneles.
     """
@@ -254,7 +289,11 @@ def fig_serie(d: dict) -> Figure:
 
 def _hijos(v1, v2, v3):
     """
-    @brief Divide el triangulo (v1, v2, v3) por el baricentro en 3 triangulos.
+    @brief Divide un triangulo por su baricentro en los tres triangulos hijos.
+    @details
+    Dados los tres vertices, calcula el baricentro G = (v1 + v2 + v3) / 3 y arma
+    los tres triangulos que se forman al unir G con cada par de vertices. Es la
+    operacion geometrica que se repite en cada nivel de la subdivision.
     @param v1 Primer vertice (array 2D de numpy).
     @param v2 Segundo vertice.
     @param v3 Tercer vertice.
@@ -266,7 +305,12 @@ def _hijos(v1, v2, v3):
 
 def fig_triangulos(niveles: int = 3) -> Figure:
     """
-    @brief Dibuja la cadena de triangulos T_0 > T_1 > ... y las zonas descartadas.
+    @brief Dibuja la cadena de triangulos y las zonas que se descartan.
+    @details
+    El panel (a) muestra la cadena T_0 > T_1 > T_2 > ... al ir conservando un
+    tercio en cada paso. El panel (b) muestra el reparto 1/3 + 2/3: la parte que
+    se conserva y la que se descarta en un paso. Es la figura que explica el
+    problema geometrico sin usar formulas.
     @param niveles Numero de niveles de subdivision a dibujar (por defecto 3).
     @return Objeto Figure con dos paneles.
     """
@@ -334,7 +378,12 @@ def fig_triangulos(niveles: int = 3) -> Figure:
 
 def fig_autovalores(info: dict, titulo: str = "") -> Figure:
     """
-    @brief Autovalores de B en el plano complejo, con el circulo unitario y rho.
+    @brief Dibuja los autovalores de B en el plano complejo.
+    @details
+    Muestra las tres raices como puntos, el circulo unitario y el circulo de
+    radio rho(B). Las raices que quedan fuera del circulo unitario son las
+    responsables de que la sucesion diverja. Es la traduccion visual del analisis
+    matricial del punto 5.
     @param info Diccionario de :func:`backend.sucesiones.analisis_B`.
     @param titulo Titulo opcional del panel.
     @return Objeto Figure.
@@ -375,7 +424,12 @@ def fig_autovalores(info: dict, titulo: str = "") -> Figure:
 
 def guardar_todas(d: dict, info_B: dict, carpeta: str, sufijo: str = "") -> list[str]:
     """
-    @brief Genera las 7 figuras como PNG y devuelve las rutas.
+    @brief Genera las siete figuras como archivos PNG y devuelve sus rutas.
+    @details
+    Recorre todas las funciones de figura del modulo, guarda cada una como PNG
+    (con un sufijo opcional para distinguir la version impresa de la corregida)
+    y cierra cada figura para liberar memoria. Es lo que usan los scripts para
+    producir las imagenes que se incluyen en el informe.
     @param d Diccionario de :func:`backend.sucesiones.tabla`.
     @param info_B Diccionario de :func:`backend.sucesiones.analisis_B`.
     @param carpeta Directorio de salida (se crea si no existe).
